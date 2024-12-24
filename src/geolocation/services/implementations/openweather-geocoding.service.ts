@@ -47,7 +47,6 @@ export class OpenWeatherGeocodingService implements GeocodingService {
 				>(`${this.#baseUrl}/direct?q=${encodeURIComponent(query.join(','))}&limit=${limit}&appid=${openWeatherAppId}`)
 				.pipe(
 					map(({ data }) => {
-						console.log(data);
 						if ('message' in data) {
 							this.#logger.error(`OpenWeather API error: ${data.message}`);
 							return null;
