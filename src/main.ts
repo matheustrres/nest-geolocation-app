@@ -5,6 +5,7 @@ import { AppModule } from '@/app.module';
 
 import { NodeEnvEnum } from '@/@core/enums/node-env';
 
+import { setupScalarReference } from '@/shared/libs/scalar';
 import { setupSwaggerDocs } from '@/shared/libs/swagger';
 import { EnvService } from '@/shared/modules/env/env.service';
 
@@ -53,13 +54,21 @@ process.on('unhandledRejection', (reason: unknown) => {
 	const envService = app.get(EnvService);
 	const appPort = envService.getKeyOrThrow('PORT');
 
+	const logMessages: string[] = [];
+
 	if (envService.getKeyOrThrow('NODE_ENV') !== NodeEnvEnum.Production) {
-		setupSwaggerDocs(app);
+		const docs = setupSwaggerDocs(app);
+		setupScalarReference(app, docs);
+		logMessages.push(
+			`API client available at http://localhost:${appPort}/reference`,
+		);
 	}
 
 	await app.listen(appPort).then(() => {
 		logger.debug(`HTTP server running on port ${appPort}.`);
-		logger.debug(`Documentation available at http://localhost:${appPort}/api`);
+		if (logMessages.length) {
+			logMessages.forEach((msg) => logger.debug(msg));
+		}
 	});
 
 	const exitSignals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGQUIT'];

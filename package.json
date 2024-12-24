@@ -36,6 +36,7 @@
 		"@nestjs/platform-express": "^10.0.0",
 		"@nestjs/swagger": "^8.1.0",
 		"@nestjs/terminus": "^10.2.3",
+		"@scalar/nestjs-api-reference": "^0.3.174",
 		"@sentry/nestjs": "^8.27.0",
 		"@sentry/node": "^7.119.0",
 		"@sentry/profiling-node": "^8.27.0",

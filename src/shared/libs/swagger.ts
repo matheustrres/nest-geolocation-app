@@ -16,6 +16,7 @@ import {
 	ApiBearerAuth,
 	DocumentBuilder,
 	SwaggerModule,
+	OpenAPIObject,
 } from '@nestjs/swagger';
 
 type SwaggerOptions = {
@@ -58,7 +59,7 @@ export function SwaggerController(prefix: string) {
 	return applyDecorators(Controller(prefix), ApiTags(prefix));
 }
 
-export function setupSwaggerDocs(app: INestApplication): void {
+export function setupSwaggerDocs(app: INestApplication): OpenAPIObject {
 	const docBuilder = new DocumentBuilder()
 		.setTitle('Geolocation API')
 		.setVersion('1.0.0')
@@ -72,7 +73,5 @@ export function setupSwaggerDocs(app: INestApplication): void {
 			OPEN_API_AUTH_NAME,
 		);
 
-	const swaggerDoc = SwaggerModule.createDocument(app, docBuilder.build());
-
-	SwaggerModule.setup('api', app, swaggerDoc);
+	return SwaggerModule.createDocument(app, docBuilder.build());
 }
