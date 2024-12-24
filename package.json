@@ -17,7 +17,7 @@
 		"start": "dotenv -e .env.dev -- nest start",
 		"start:dev": "dotenv -e .env.dev -- nest start --watch",
 		"start:prod": "node --env-file=.env ./dist/main",
-		"pretest": "npm prebuild",
+		"pretest": "npm run prebuild",
 		"test": "dotenv -e .env.test -- jest",
 		"test:watch": "npm run test -- --watch",
 		"test:cov": "npm run test -- --coverage",
