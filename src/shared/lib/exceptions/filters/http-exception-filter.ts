@@ -24,7 +24,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
 
 		const message = isInternalServerError
 			? 'Internal Server Error'
-			: exception.message;
+			: exception.getResponse();
 
 		const errorResponse = {
 			timestamp: new Date().toISOString(),

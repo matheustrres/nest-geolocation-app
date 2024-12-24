@@ -44,4 +44,8 @@ export class EnvSchema {
 	@IsString()
 	@IsNotEmpty()
 	SENTRY_DSN?: string;
+
+	@IsString()
+	@IsNotEmpty()
+	OPEN_WEATHER_APP_ID?: string;
 }

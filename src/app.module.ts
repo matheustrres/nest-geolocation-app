@@ -5,6 +5,8 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 
+import { GeolocationModule } from '@/geolocation/geolocation.module';
+
 import { HealthModule } from '@/health/health.module';
 
 import { GlobalExceptionFilter } from '@/shared/lib/exceptions/filters/global-exception-filter';
@@ -37,6 +39,7 @@ import { SentryMonitorModuleOptions } from '@/shared/modules/monitor/sentry-moni
 		}),
 		DatabaseModule,
 		HealthModule,
+		GeolocationModule,
 	],
 	controllers: [AppController],
 	providers: [

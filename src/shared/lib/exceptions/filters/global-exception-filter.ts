@@ -6,6 +6,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+import { isAxiosError } from '@nestjs/terminus/dist/utils';
 
 import { SentryMonitorService } from '@/shared/modules/monitor/sentry-monitor.service';
 import { RequestSessionStatus } from '@/shared/modules/monitor/sentry-monitor.types';
@@ -33,6 +34,10 @@ export class GlobalExceptionFilter implements ExceptionFilter<unknown> {
 			message: 'Internal Server Error',
 			endpoint: httpAdapter.getRequestUrl(ctx.getRequest()),
 		};
+
+		if (isAxiosError(exception)) {
+			errorResponse.message = exception.message;
+		}
 
 		this.sentryMonitorService.captureException(
 			exception,

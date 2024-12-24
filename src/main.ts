@@ -48,6 +48,7 @@ process.on('unhandledRejection', (reason: unknown) => {
 			whitelist: true,
 			forbidNonWhitelisted: true,
 			transform: true,
+			forbidUnknownValues: true,
 		}),
 	);
 
