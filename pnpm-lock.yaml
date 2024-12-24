@@ -48,7 +48,7 @@ importers:
         specifier: ^8.27.0
         version: 8.27.0
       axios:
-        specifier: ^1.7.4
+        specifier: ^1.7.5
         version: 1.7.5
       class-transformer:
         specifier: ^0.5.1
