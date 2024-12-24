@@ -30,6 +30,7 @@ module.exports = {
           "parent",
           "/^@/app/",
           "/^@/@core/",
+          "/^@/geolocation/",
           "/^@/health/",
           "/^@/shared/",
           "/^#/"
