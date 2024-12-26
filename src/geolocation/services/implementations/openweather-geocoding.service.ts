@@ -1,16 +1,22 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
-import { catchError, firstValueFrom, map, throwError } from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { catchError, firstValueFrom, map, of } from 'rxjs';
 
 import {
 	LocationToGeoCoordinatesConversionResponse,
 	ConvertLocationToGeoCoordinatesOptions,
 	GeocodingService,
+	DirectGeocoding,
+	GeocodingRequestStatus,
 } from '@/geolocation/services/geocoding.service';
 
 import { EnvService } from '@/shared/modules/env/env.service';
 
-type OpenWeatherDataResponse<T> =
+type OpenWeatherDirectGeocodingResponse = DirectGeocoding & {
+	local_names: Record<string, string>;
+};
+
+type OpenWeatherResponse<T> =
 	| T
 	| {
 			cod: string;
@@ -19,7 +25,6 @@ type OpenWeatherDataResponse<T> =
 
 @Injectable()
 export class OpenWeatherGeocodingService implements GeocodingService {
-	readonly #logger = new Logger(OpenWeatherGeocodingService.name);
 	readonly #baseUrl = 'http://api.openweathermap.org/geo/1.0';
 
 	constructor(
@@ -32,35 +37,52 @@ export class OpenWeatherGeocodingService implements GeocodingService {
 		countryCode,
 		stateCode,
 		limit = 10,
-	}: ConvertLocationToGeoCoordinatesOptions): Promise<
-		LocationToGeoCoordinatesConversionResponse[] | null
-	> {
+	}: ConvertLocationToGeoCoordinatesOptions): Promise<LocationToGeoCoordinatesConversionResponse> {
+		const requestSource = this.httpService.get<
+			OpenWeatherResponse<OpenWeatherDirectGeocodingResponse[]>
+		>(this.#buildDirectGeocodingUrl(city, countryCode, stateCode, limit));
+
+		return firstValueFrom(
+			requestSource.pipe(
+				map(({ data }) => {
+					if ('message' in data) return this.#replyWithError(data.message);
+					return this.#replyWithSuccess(data);
+				}),
+				catchError((error) => of(this.#replyWithError(error.message))),
+			),
+		);
+	}
+
+	#buildDirectGeocodingUrl(
+		city: string,
+		countryCode: string,
+		stateCode?: string,
+		limit = 10,
+	): string {
 		const openWeatherAppId = this.envService.getKeyOrThrow(
 			'OPEN_WEATHER_APP_ID',
 		);
-		const query = [city, stateCode, countryCode];
+		const url = new URL(`${this.#baseUrl}/direct`);
+		url.searchParams.append('q', [city, stateCode, countryCode].join(','));
+		url.searchParams.append('limit', limit.toString());
+		url.searchParams.append('appid', openWeatherAppId);
 
-		return firstValueFrom(
-			this.httpService
-				.get<
-					OpenWeatherDataResponse<LocationToGeoCoordinatesConversionResponse[]>
-				>(`${this.#baseUrl}/direct?q=${encodeURIComponent(query.join(','))}&limit=${limit}&appid=${openWeatherAppId}`)
-				.pipe(
-					map(({ data }) => {
-						if ('message' in data) {
-							this.#logger.error(`OpenWeather API error: ${data.message}`);
-							return null;
-						}
-						return data as LocationToGeoCoordinatesConversionResponse[];
-					}),
-					catchError((error) => {
-						this.#logger.error(
-							'Error while converting address to geo coordinates: ',
-							error,
-						);
-						return throwError(() => error);
-					}),
-				),
-		);
+		return url.toString();
+	}
+
+	#replyWithError(message: string): LocationToGeoCoordinatesConversionResponse {
+		return {
+			status: GeocodingRequestStatus.Error,
+			data: message,
+		};
+	}
+
+	#replyWithSuccess(
+		data: OpenWeatherDirectGeocodingResponse[],
+	): LocationToGeoCoordinatesConversionResponse {
+		return {
+			status: GeocodingRequestStatus.Success,
+			data,
+		};
 	}
 }

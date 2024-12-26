@@ -3,8 +3,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UseCase } from '@/@core/use-case';
 
 import {
-	LocationToGeoCoordinatesConversionResponse,
 	GeocodingService,
+	DirectGeocoding,
 } from '@/geolocation/services/geocoding.service';
 
 export type ConvertLocationToGeoCoordinatesUseCaseInput = {
@@ -15,7 +15,7 @@ export type ConvertLocationToGeoCoordinatesUseCaseInput = {
 };
 
 export type ConvertLocationToGeoCoordinatesUseCaseOutput = {
-	locations: Iterable<LocationToGeoCoordinatesConversionResponse>;
+	locations: Iterable<DirectGeocoding>;
 };
 
 @Injectable()
@@ -34,30 +34,25 @@ export class ConvertLocationToGeoCoordinatesUseCase
 		stateCode,
 		limit,
 	}: ConvertLocationToGeoCoordinatesUseCaseInput): Promise<ConvertLocationToGeoCoordinatesUseCaseOutput> {
-		try {
-			const locations =
-				await this.geocodingService.convertAddressToGeoCoordinates({
-					city,
-					stateCode,
-					countryCode,
-					limit,
-				});
+		const result = await this.geocodingService.convertAddressToGeoCoordinates({
+			city,
+			stateCode,
+			countryCode,
+			limit,
+		});
 
-			if (!locations?.length) {
-				throw new NotFoundException('No location was found for given address.');
-			}
-
-			return {
-				locations: this.#normalizeLocations(locations),
-			};
-		} catch (error) {
+		if (result.status === 'error') {
 			throw new NotFoundException('No location was found for given address.');
 		}
+
+		return {
+			locations: this.#normalizeLocations(result.data),
+		};
 	}
 
 	*#normalizeLocations(
-		locations: LocationToGeoCoordinatesConversionResponse[],
-	): Iterable<LocationToGeoCoordinatesConversionResponse> {
+		locations: DirectGeocoding[],
+	): Iterable<DirectGeocoding> {
 		for (const location of locations) {
 			yield {
 				name: location.name,

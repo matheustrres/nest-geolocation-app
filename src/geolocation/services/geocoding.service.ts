@@ -5,7 +5,12 @@ export type ConvertLocationToGeoCoordinatesOptions = {
 	limit?: number;
 };
 
-export type LocationToGeoCoordinatesConversionResponse = {
+export enum GeocodingRequestStatus {
+	Error = 'error',
+	Success = 'success',
+}
+
+export type DirectGeocoding = {
 	name: string;
 	lat: number;
 	lon: number;
@@ -13,8 +18,18 @@ export type LocationToGeoCoordinatesConversionResponse = {
 	state: string;
 };
 
+export type LocationToGeoCoordinatesConversionResponse =
+	| {
+			status: GeocodingRequestStatus.Error;
+			data: string;
+	  }
+	| {
+			status: GeocodingRequestStatus.Success;
+			data: Array<DirectGeocoding>;
+	  };
+
 export abstract class GeocodingService {
 	abstract convertAddressToGeoCoordinates(
 		opts: ConvertLocationToGeoCoordinatesOptions,
-	): Promise<LocationToGeoCoordinatesConversionResponse[] | null>;
+	): Promise<LocationToGeoCoordinatesConversionResponse>;
 }
