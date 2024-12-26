@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 
 import { ConvertLocationToGeoCoordinatesController } from './controllers/convert-location-to-geo-coords.controller';
 import { GeocodingService } from './services/geocoding.service';
-import { OpenWeatherGeocodingService } from './services/implementations/openweather-geocoding.service';
+import { GeocodeMapsGeocodingService } from './services/implementations/geocodemaps-geocoding.service';
 import { ConvertLocationToGeoCoordinatesUseCase } from './use-cases/convert-location-to-geo-coords.use-case';
 
 import { EnvModule } from '@/shared/modules/env/env.module';
@@ -13,7 +13,7 @@ import { EnvModule } from '@/shared/modules/env/env.module';
 	providers: [
 		{
 			provide: GeocodingService,
-			useClass: OpenWeatherGeocodingService,
+			useClass: GeocodeMapsGeocodingService,
 		},
 		ConvertLocationToGeoCoordinatesUseCase,
 	],

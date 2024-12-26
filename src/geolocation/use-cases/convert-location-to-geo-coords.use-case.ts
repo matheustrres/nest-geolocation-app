@@ -4,18 +4,18 @@ import { UseCase } from '@/@core/use-case';
 
 import {
 	GeocodingService,
-	DirectGeocoding,
+	ForwardGeocoding,
 } from '@/geolocation/services/geocoding.service';
 
 export type ConvertLocationToGeoCoordinatesUseCaseInput = {
 	city: string;
-	countryCode: string;
-	stateCode?: string;
-	limit?: number;
+	country: string;
+	state: string;
+	street: string;
 };
 
 export type ConvertLocationToGeoCoordinatesUseCaseOutput = {
-	locations: Iterable<DirectGeocoding>;
+	locations: Iterable<ForwardGeocoding>;
 };
 
 @Injectable()
@@ -28,39 +28,18 @@ export class ConvertLocationToGeoCoordinatesUseCase
 {
 	constructor(private readonly geocodingService: GeocodingService) {}
 
-	async exec({
-		city,
-		countryCode,
-		stateCode,
-		limit,
-	}: ConvertLocationToGeoCoordinatesUseCaseInput): Promise<ConvertLocationToGeoCoordinatesUseCaseOutput> {
-		const result = await this.geocodingService.convertAddressToGeoCoordinates({
-			city,
-			stateCode,
-			countryCode,
-			limit,
-		});
+	async exec(
+		input: ConvertLocationToGeoCoordinatesUseCaseInput,
+	): Promise<ConvertLocationToGeoCoordinatesUseCaseOutput> {
+		const result =
+			await this.geocodingService.convertAddressToGeoCoordinates(input);
 
 		if (result.status === 'error') {
 			throw new NotFoundException('No location was found for given address.');
 		}
 
 		return {
-			locations: this.#normalizeLocations(result.data),
+			locations: result.data,
 		};
-	}
-
-	*#normalizeLocations(
-		locations: DirectGeocoding[],
-	): Iterable<DirectGeocoding> {
-		for (const location of locations) {
-			yield {
-				name: location.name,
-				lat: location.lat,
-				lon: location.lon,
-				country: location.country,
-				state: location.state,
-			};
-		}
 	}
 }

@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-	IsNotEmpty,
-	IsNumber,
-	IsOptional,
-	IsString,
-	Max,
-	Min,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 import { ConvertLocationToGeoCoordinatesUseCaseInput } from '@/geolocation/use-cases/convert-location-to-geo-coords.use-case';
 
@@ -30,26 +23,23 @@ export class ConvertLocationToGeoCoordinatesBodyDto
 	})
 	@IsString()
 	@IsNotEmpty()
-	countryCode!: string;
+	country!: string;
 
 	@ApiProperty({
-		description: 'State code only for US',
 		type: 'string',
-		required: false,
-		example: 'RJ',
+		required: true,
+		example: 'Rio de Janeiro',
 	})
 	@IsString()
-	@IsOptional()
-	stateCode!: string;
+	@IsNotEmpty()
+	state!: string;
 
 	@ApiProperty({
-		type: 'number',
-		required: false,
-		example: 5,
+		type: 'string',
+		required: true,
+		example: 'Avenida Mem de Sá',
 	})
-	@IsNumber()
-	@Min(1)
-	@Max(5)
-	@IsOptional()
-	limit = 1;
+	@IsString()
+	@IsNotEmpty()
+	street!: string;
 }

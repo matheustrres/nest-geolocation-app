@@ -33,8 +33,9 @@ describe(ConvertLocationToGeoCoordinatesUseCase.name, () => {
 		await expect(
 			sut.exec({
 				city: 'São Paulo',
-				countryCode: 'BR',
-				limit: 1,
+				country: 'Brasil',
+				state: 'São Paulo',
+				street: 'Avenida Paulista',
 			}),
 		).rejects.toThrow(
 			new NotFoundException('No location was found for given address.'),
@@ -43,9 +44,9 @@ describe(ConvertLocationToGeoCoordinatesUseCase.name, () => {
 			geocodingService.convertAddressToGeoCoordinates,
 		).toHaveBeenCalledWith({
 			city: 'São Paulo',
-			countryCode: 'BR',
-			limit: 1,
-			stateCode: undefined,
+			country: 'Brasil',
+			state: 'São Paulo',
+			street: 'Avenida Paulista',
 		});
 	});
 
@@ -59,33 +60,30 @@ describe(ConvertLocationToGeoCoordinatesUseCase.name, () => {
 						name: 'São Paulo',
 						lat: -23.5506507,
 						lon: -46.6333824,
-						country: 'BR',
-						state: 'São Paulo',
 					},
 				],
 			});
 
 		const result = await sut.exec({
 			city: 'São Paulo',
-			countryCode: 'BR',
-			limit: 5,
+			country: 'Brasil',
+			state: 'São Paulo',
+			street: 'Avenida Paulista',
 		});
 
 		expect(
 			geocodingService.convertAddressToGeoCoordinates,
 		).toHaveBeenCalledWith({
 			city: 'São Paulo',
-			countryCode: 'BR',
-			limit: 5,
-			stateCode: undefined,
+			country: 'Brasil',
+			state: 'São Paulo',
+			street: 'Avenida Paulista',
 		});
-		expect([...result.locations]).toStrictEqual([
+		expect(result.locations).toStrictEqual([
 			{
 				name: 'São Paulo',
 				lat: -23.5506507,
 				lon: -46.6333824,
-				country: 'BR',
-				state: 'São Paulo',
 			},
 		]);
 	});

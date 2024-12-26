@@ -47,5 +47,5 @@ export class EnvSchema {
 
 	@IsString()
 	@IsNotEmpty()
-	OPEN_WEATHER_APP_ID?: string;
+	GEOCODE_MAPS_API_KEY?: string;
 }

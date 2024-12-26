@@ -1,8 +1,8 @@
 export type ConvertLocationToGeoCoordinatesOptions = {
 	city: string;
-	countryCode: string;
-	stateCode?: string;
-	limit?: number;
+	country: string;
+	state: string;
+	street: string;
 };
 
 export enum GeocodingRequestStatus {
@@ -10,12 +10,10 @@ export enum GeocodingRequestStatus {
 	Success = 'success',
 }
 
-export type DirectGeocoding = {
+export type ForwardGeocoding = {
 	name: string;
 	lat: number;
 	lon: number;
-	country: string;
-	state: string;
 };
 
 export type LocationToGeoCoordinatesConversionResponse =
@@ -25,7 +23,7 @@ export type LocationToGeoCoordinatesConversionResponse =
 	  }
 	| {
 			status: GeocodingRequestStatus.Success;
-			data: Array<DirectGeocoding>;
+			data: Iterable<ForwardGeocoding>;
 	  };
 
 export abstract class GeocodingService {
