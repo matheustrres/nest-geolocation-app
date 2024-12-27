@@ -6,6 +6,7 @@ import {
 } from '@/geolocation/services/geocoding.service';
 import { ConvertLocationToGeoCoordinatesUseCase } from '@/geolocation/use-cases/convert-location-to-geo-coords.use-case';
 
+import { ConvertLocationToGeoCoordinatesUseCaseBuilder } from '#/data/builders/use-cases/convert-location-to-geo-coords.use-case';
 import { createGeocodingServiceMock } from '#/data/mocks/geocoding.service';
 
 describe(ConvertLocationToGeoCoordinatesUseCase.name, () => {
@@ -30,14 +31,13 @@ describe(ConvertLocationToGeoCoordinatesUseCase.name, () => {
 				status: GeocodingRequestStatus.Error,
 			});
 
-		await expect(
-			sut.exec({
-				city: 'São Paulo',
-				country: 'Brasil',
-				state: 'São Paulo',
-				street: 'Avenida Paulista',
-			}),
-		).rejects.toThrow(
+		const { input } = new ConvertLocationToGeoCoordinatesUseCaseBuilder()
+			.setCity('São Paulo')
+			.setCountry('Brasil')
+			.setState('São Paulo')
+			.setStreet('Avenida Paulista');
+
+		await expect(sut.exec(input)).rejects.toThrow(
 			new NotFoundException('No location was found for given address.'),
 		);
 		expect(
@@ -64,12 +64,13 @@ describe(ConvertLocationToGeoCoordinatesUseCase.name, () => {
 				],
 			});
 
-		const result = await sut.exec({
-			city: 'São Paulo',
-			country: 'Brasil',
-			state: 'São Paulo',
-			street: 'Avenida Paulista',
-		});
+		const { input } = new ConvertLocationToGeoCoordinatesUseCaseBuilder()
+			.setCity('São Paulo')
+			.setCountry('Brasil')
+			.setState('São Paulo')
+			.setStreet('Avenida Paulista');
+
+		const result = await sut.exec(input);
 
 		expect(
 			geocodingService.convertAddressToGeoCoordinates,
