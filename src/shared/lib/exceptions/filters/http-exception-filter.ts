@@ -28,8 +28,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
 
 		const errorResponse = {
 			timestamp: new Date().toISOString(),
-			code: status,
-			message,
+			content: message,
 			endpoint: `${request.method} ${request.url}`,
 		};
 

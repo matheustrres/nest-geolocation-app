@@ -1,21 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { UseCase } from '@/@core/use-case';
+import { PaginatorService } from '@/@core/domain/services/paginator.service';
+import { UseCase } from '@/@core/domain/use-case';
 
 import {
 	GeocodingService,
 	ForwardGeocoding,
+	ConvertLocationToGeoCoordinatesOptions,
 } from '@/geolocation/services/geocoding.service';
 
-export type ConvertLocationToGeoCoordinatesUseCaseInput = {
-	city: string;
-	country: string;
-	state: string;
-	street: string;
-};
+export type ConvertLocationToGeoCoordinatesUseCaseInput =
+	ConvertLocationToGeoCoordinatesOptions & {
+		itemsPerPage?: number;
+		limit?: number;
+		skip?: number;
+	};
 
 export type ConvertLocationToGeoCoordinatesUseCaseOutput = {
-	locations: Iterable<ForwardGeocoding>;
+	locations: ForwardGeocoding[];
 };
 
 @Injectable()
@@ -28,18 +30,33 @@ export class ConvertLocationToGeoCoordinatesUseCase
 {
 	constructor(private readonly geocodingService: GeocodingService) {}
 
-	async exec(
-		input: ConvertLocationToGeoCoordinatesUseCaseInput,
-	): Promise<ConvertLocationToGeoCoordinatesUseCaseOutput> {
-		const result =
-			await this.geocodingService.convertAddressToGeoCoordinates(input);
+	async exec({
+		city,
+		country,
+		state,
+		street,
+		...paginOptions
+	}: ConvertLocationToGeoCoordinatesUseCaseInput): Promise<ConvertLocationToGeoCoordinatesUseCaseOutput> {
+		const result = await this.geocodingService.convertAddressToGeoCoordinates({
+			city,
+			country,
+			state,
+			street,
+		});
 
 		if (result.status === 'error') {
 			throw new NotFoundException('No location was found for given address.');
 		}
 
+		const paginator = new PaginatorService({
+			items: [...result.data],
+			itemsPerPage: paginOptions.itemsPerPage,
+			skip: paginOptions.skip,
+			take: paginOptions.limit,
+		});
+
 		return {
-			locations: result.data,
+			locations: [...paginator.loadPages()].flat(),
 		};
 	}
 }

@@ -1,8 +1,11 @@
-import { Body, Post } from '@nestjs/common';
+import { Body, Post, Query } from '@nestjs/common';
 
-import { ConvertLocationToGeoCoordinatesBodyDto } from './dtos/convert-location-to-geo-coords.dto';
+import {
+	ConvertLocationToGeoCoordinatesBodyDto,
+	ConvertLocationToGeoCoordinatesQueryDto,
+} from './dtos/convert-location-to-geo-coords.dto';
 
-import { BaseController } from '@/@core/controller';
+import { BaseController } from '@/@core/domain/controller';
 
 import {
 	ConvertLocationToGeoCoordinatesUseCase,
@@ -22,8 +25,12 @@ export class ConvertLocationToGeoCoordinatesController
 	@Post('convert-address')
 	async handle(
 		@Body() body: ConvertLocationToGeoCoordinatesBodyDto,
+		@Query() query: ConvertLocationToGeoCoordinatesQueryDto,
 	): Promise<ConvertLocationToGeoCoordinatesUseCaseOutput> {
-		const { locations } = await this.useCase.exec(body);
+		const { locations } = await this.useCase.exec({
+			...body,
+			...query,
+		});
 
 		return {
 			locations: [...locations],

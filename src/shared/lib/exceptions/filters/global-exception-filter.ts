@@ -30,13 +30,12 @@ export class GlobalExceptionFilter implements ExceptionFilter<unknown> {
 
 		const errorResponse = {
 			timestamp: new Date().toISOString(),
-			code: httpStatus,
-			message: 'Internal Server Error',
+			content: 'Internal Server Error',
 			endpoint: httpAdapter.getRequestUrl(ctx.getRequest()),
 		};
 
 		if (isAxiosError(exception)) {
-			errorResponse.message = exception.message;
+			errorResponse.content = exception.message;
 		}
 
 		this.sentryMonitorService.captureException(
