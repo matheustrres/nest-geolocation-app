@@ -5,6 +5,8 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 
+import { CoreModule } from '@/@core/core.module';
+
 import { GeolocationModule } from '@/geolocation/geolocation.module';
 
 import { HealthModule } from '@/health/health.module';
@@ -19,6 +21,7 @@ import { SentryMonitorModuleOptions } from '@/shared/modules/monitor/sentry-moni
 
 @Module({
 	imports: [
+		CoreModule,
 		SentryMonitorModule.forRootAsync({
 			imports: [EnvModule],
 			useFactory: (envService: EnvService): SentryMonitorModuleOptions => {

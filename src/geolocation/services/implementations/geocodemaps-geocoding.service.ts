@@ -1,6 +1,7 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
-import { catchError, firstValueFrom, map, Observable, of } from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+
+import { HttpRequestService } from '@/@core/domain/services/http-request.service';
 
 import {
 	GeocodingResponse,
@@ -41,54 +42,48 @@ type GeocodeMapsReverseGeocodingResponse = {
 @Injectable()
 export class GeocodeMapsGeocodingService implements GeocodingService {
 	readonly #baseUrl = 'https://geocode.maps.co';
-	readonly #logger = new Logger(GeocodeMapsGeocodingService.name);
 
 	constructor(
+		private readonly httpRequestService: HttpRequestService,
 		private readonly envService: EnvService,
-		private readonly httpService: HttpService,
 	) {}
 
 	async convertAddressToGeoCoordinates(
 		opts: ConvertLocationToGeoCoordinatesOptions,
 	): Promise<GeocodingResponse<Iterable<ForwardGeocoding>>> {
-		const source = this.httpService.get<GeocodeMapsForwardGeocodingResponse[]>(
-			this.#buildForwardGeocodingUrl(opts).toString(),
+		const url = this.#buildForwardGeocodingUrl(opts).toString();
+
+		const result = await firstValueFrom(
+			this.httpRequestService.makeGet<
+				GeocodeMapsForwardGeocodingResponse[],
+				Iterable<ForwardGeocoding>
+			>(url, this.#normalizeForwardedGeocodingCoordinates.bind(this)),
 		);
 
-		return firstValueFrom(
-			source.pipe(
-				map(({ data }): GeocodingResponse<Iterable<ForwardGeocoding>> => {
-					if (!data) this.#replyWithError('Invalid address provided.');
-					return this.#replySuccessfulForwardGeocoding(data);
-				}),
-				catchError((err): Observable<GeocodingResponse<any>> => {
-					this.#logger.error('Error converting address to coordinates', err);
-					return of(this.#replyWithError(err.message));
-				}),
-			),
-		);
+		if (typeof result === 'string') {
+			return this.#createErrorResponse(result);
+		}
+
+		return this.#createSuccessResponse(result);
 	}
 
 	async convertGeoCoordinatesToAddress(
 		opts: ConvertGeoCoordsToLocationOptions,
 	): Promise<GeocodingResponse<ReverseGeocoding>> {
-		const source = this.httpService.get<GeocodeMapsReverseGeocodingResponse>(
-			this.#buildReverseGeocodingUrl(opts).toString(),
+		const url = this.#buildReverseGeocodingUrl(opts).toString();
+
+		const result = await firstValueFrom(
+			this.httpRequestService.makeGet<
+				GeocodeMapsReverseGeocodingResponse,
+				ReverseGeocoding
+			>(url, this.#normalizeReverseGeocodingCoordinates.bind(this)),
 		);
 
-		return firstValueFrom(
-			source.pipe(
-				map(({ data }): GeocodingResponse<ReverseGeocoding> => {
-					if (!data)
-						return this.#replyWithError('Invalid coordinates provided.');
-					return this.#replySuccessfulReverseGeocoding(data);
-				}),
-				catchError((err): Observable<GeocodingResponse<any>> => {
-					this.#logger.error('Error converting coordinates to address', err);
-					return of(this.#replyWithError(err.message));
-				}),
-			),
-		);
+		if (typeof result === 'string') {
+			return this.#createErrorResponse(result);
+		}
+
+		return this.#createSuccessResponse(result);
 	}
 
 	#buildForwardGeocodingUrl({
@@ -120,33 +115,6 @@ export class GeocodeMapsGeocodingService implements GeocodingService {
 		return url;
 	}
 
-	#replyWithError<T extends ForwardGeocoding | ReverseGeocoding>(
-		message: string,
-	): GeocodingResponse<T> {
-		return {
-			status: GeocodingRequestStatus.Error,
-			data: message,
-		};
-	}
-
-	#replySuccessfulForwardGeocoding(
-		data: GeocodeMapsForwardGeocodingResponse[],
-	): GeocodingResponse<Iterable<ForwardGeocoding>> {
-		return {
-			status: GeocodingRequestStatus.Success,
-			data: this.#normalizeForwardedGeocodingCoordinates(data),
-		};
-	}
-
-	#replySuccessfulReverseGeocoding(
-		data: GeocodeMapsReverseGeocodingResponse,
-	): GeocodingResponse<ReverseGeocoding> {
-		return {
-			status: GeocodingRequestStatus.Success,
-			data: this.#normalizeReverseGeocodingCoordinates(data),
-		};
-	}
-
 	*#normalizeForwardedGeocodingCoordinates(
 		locations: GeocodeMapsForwardGeocodingResponse[],
 	): Iterable<ForwardGeocoding> {
@@ -174,6 +142,20 @@ export class GeocodeMapsGeocodingService implements GeocodingService {
 			street: location.address.road,
 			suburb: location.address.suburb,
 			region: location.address.region,
+		};
+	}
+
+	#createErrorResponse<T>(message: string): GeocodingResponse<T> {
+		return {
+			status: GeocodingRequestStatus.Error,
+			data: message,
+		};
+	}
+
+	#createSuccessResponse<T>(data: T): GeocodingResponse<T> {
+		return {
+			status: GeocodingRequestStatus.Success,
+			data,
 		};
 	}
 }
