@@ -1,4 +1,4 @@
-import { DefaultPaginationOptionsQueryDto } from '@/@core/domain/dtos/pagination.dto';
+import { DefaultPaginationOptionsQueryDto } from '@/@core/infra/dtos/pagination.dto';
 
 export class DefaultPaginationOptionsQueryDtoBuilder {
 	#query: DefaultPaginationOptionsQueryDto;
