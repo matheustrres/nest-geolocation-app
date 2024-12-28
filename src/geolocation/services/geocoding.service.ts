@@ -21,7 +21,16 @@ export type ForwardGeocoding = {
 	lon: number;
 };
 
-export type GeocodingResponse<T extends ForwardGeocoding> =
+export type ReverseGeocoding = {
+	city: string;
+	country: string;
+	state: string;
+	street: string;
+	lat: number;
+	lon: number;
+};
+
+export type GeocodingResponse<T extends ForwardGeocoding | ReverseGeocoding> =
 	| {
 			status: GeocodingRequestStatus.Error;
 			data: string;
@@ -35,4 +44,7 @@ export abstract class GeocodingService {
 	abstract convertAddressToGeoCoordinates(
 		opts: ConvertLocationToGeoCoordinatesOptions,
 	): Promise<GeocodingResponse<ForwardGeocoding>>;
+	abstract convertGeoCoordinatesToLocation(
+		opts: ConvertGeoCoordsToLocationOptions,
+	): Promise<GeocodingResponse<ReverseGeocoding>>;
 }

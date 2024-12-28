@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PaginatorService } from '@/@core/domain/services/paginator.service';
+import { WithPaginationOptions } from '@/@core/domain/types';
 import { UseCase } from '@/@core/domain/use-case';
 
 import {
@@ -10,11 +11,7 @@ import {
 } from '@/geolocation/services/geocoding.service';
 
 export type ConvertLocationToGeoCoordinatesUseCaseInput =
-	ConvertLocationToGeoCoordinatesOptions & {
-		itemsPerPage?: number;
-		limit?: number;
-		skip?: number;
-	};
+	WithPaginationOptions<ConvertLocationToGeoCoordinatesOptions>;
 
 export type ConvertLocationToGeoCoordinatesUseCaseOutput = {
 	locations: ForwardGeocoding[];
