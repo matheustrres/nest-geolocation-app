@@ -1,21 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-	IsNotEmpty,
-	IsNumberString,
-	IsOptional,
-	IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-import { BetterOmit } from '@/@core/domain/types';
+import { WithoutPaginationOptions } from '@/@core/domain/types';
 
 import { ConvertLocationToGeoCoordinatesUseCaseInput } from '@/geolocation/use-cases/convert-location-to-geo-coords.use-case';
 
 export class ConvertLocationToGeoCoordinatesBodyDto
 	implements
-		BetterOmit<
-			ConvertLocationToGeoCoordinatesUseCaseInput,
-			'itemsPerPage' | 'limit' | 'skip'
-		>
+		WithoutPaginationOptions<ConvertLocationToGeoCoordinatesUseCaseInput>
 {
 	@ApiProperty({
 		type: 'string',
@@ -53,42 +45,4 @@ export class ConvertLocationToGeoCoordinatesBodyDto
 	@IsString()
 	@IsNotEmpty()
 	street!: string;
-}
-
-export class ConvertLocationToGeoCoordinatesQueryDto
-	implements
-		Pick<
-			ConvertLocationToGeoCoordinatesUseCaseInput,
-			'itemsPerPage' | 'limit' | 'skip'
-		>
-{
-	@ApiProperty({
-		description: 'The number of items per page',
-		type: 'number',
-		required: false,
-		example: 5,
-	})
-	@IsNumberString()
-	@IsOptional()
-	itemsPerPage?: number;
-
-	@ApiProperty({
-		description: 'The number of items to be taken',
-		type: 'number',
-		required: false,
-		example: 100,
-	})
-	@IsNumberString()
-	@IsOptional()
-	limit?: number;
-
-	@ApiProperty({
-		description: 'The number of items to be skipped',
-		type: 'number',
-		required: false,
-		example: 10,
-	})
-	@IsNumberString()
-	@IsOptional()
-	skip?: number;
 }

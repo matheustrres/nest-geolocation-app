@@ -1,9 +1,7 @@
 import { ConvertLocationToGeoCoordinatesController } from '@/geolocation/controllers/convert-location-to-geo-coords.controller';
 
-import {
-	ConvertLocationToGeoCoordinatesBodyDtoBuilder,
-	ConvertLocationToGeoCoordinatesQueryDtoBuilder,
-} from '#/data/builders/dtos/convert-location-to-geo-coords.dto';
+import { ConvertLocationToGeoCoordinatesBodyDtoBuilder } from '#/data/builders/dtos/convert-location-to-geo-coords.dto';
+import { DefaultPaginationOptionsQueryDtoBuilder } from '#/data/builders/dtos/default-pagination-options.dto';
 import { ConvertLocationToGeoCoordinatesUseCaseStub } from '#/data/stubs/use-cases/convert-location-to-geo-coords.use-case';
 
 describe(ConvertLocationToGeoCoordinatesController.name, () => {
@@ -84,8 +82,7 @@ describe(ConvertLocationToGeoCoordinatesController.name, () => {
 			.setCity('Porto Seguro')
 			.setCountry('Brazil')
 			.setState('Bahia');
-		const { query } =
-			new ConvertLocationToGeoCoordinatesQueryDtoBuilder().setLimit(1);
+		const { query } = new DefaultPaginationOptionsQueryDtoBuilder().setLimit(1);
 
 		const commonBody = {
 			city: 'Porto Seguro',

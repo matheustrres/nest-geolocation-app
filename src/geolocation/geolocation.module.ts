@@ -1,10 +1,12 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 
-import { ConvertLocationToGeoCoordinatesController } from './controllers/convert-location-to-geo-coords.controller';
-import { GeocodingService } from './services/geocoding.service';
-import { GeocodeMapsGeocodingService } from './services/implementations/geocodemaps-geocoding.service';
-import { ConvertLocationToGeoCoordinatesUseCase } from './use-cases/convert-location-to-geo-coords.use-case';
+import { ConvertGeoCoordsToLocationController } from '@/geolocation/controllers/convert-geo-coords-to-location.controller';
+import { ConvertLocationToGeoCoordinatesController } from '@/geolocation/controllers/convert-location-to-geo-coords.controller';
+import { GeocodingService } from '@/geolocation/services/geocoding.service';
+import { GeocodeMapsGeocodingService } from '@/geolocation/services/implementations/geocodemaps-geocoding.service';
+import { ConvertGeoCoordinatesToLocationUseCase } from '@/geolocation/use-cases/convert-geo-coords-to-location.use-case';
+import { ConvertLocationToGeoCoordinatesUseCase } from '@/geolocation/use-cases/convert-location-to-geo-coords.use-case';
 
 import { EnvModule } from '@/shared/modules/env/env.module';
 
@@ -15,8 +17,12 @@ import { EnvModule } from '@/shared/modules/env/env.module';
 			provide: GeocodingService,
 			useClass: GeocodeMapsGeocodingService,
 		},
+		ConvertGeoCoordinatesToLocationUseCase,
 		ConvertLocationToGeoCoordinatesUseCase,
 	],
-	controllers: [ConvertLocationToGeoCoordinatesController],
+	controllers: [
+		ConvertGeoCoordsToLocationController,
+		ConvertLocationToGeoCoordinatesController,
+	],
 })
 export class GeolocationModule {}

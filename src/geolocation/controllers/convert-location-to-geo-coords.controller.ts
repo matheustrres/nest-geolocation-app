@@ -1,11 +1,9 @@
 import { Body, Post, Query } from '@nestjs/common';
 
-import {
-	ConvertLocationToGeoCoordinatesBodyDto,
-	ConvertLocationToGeoCoordinatesQueryDto,
-} from './dtos/convert-location-to-geo-coords.dto';
+import { ConvertLocationToGeoCoordinatesBodyDto } from './dtos/convert-location-to-geo-coords.dto';
 
 import { BaseController } from '@/@core/domain/controller';
+import { DefaultPaginationOptionsQueryDto } from '@/@core/domain/dtos/pagination.dto';
 
 import {
 	ConvertLocationToGeoCoordinatesUseCase,
@@ -25,7 +23,7 @@ export class ConvertLocationToGeoCoordinatesController
 	@Post('convert-address')
 	async handle(
 		@Body() body: ConvertLocationToGeoCoordinatesBodyDto,
-		@Query() query: ConvertLocationToGeoCoordinatesQueryDto,
+		@Query() query: DefaultPaginationOptionsQueryDto,
 	): Promise<ConvertLocationToGeoCoordinatesUseCaseOutput> {
 		const { locations } = await this.useCase.exec({
 			...body,
