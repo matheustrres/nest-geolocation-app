@@ -9,13 +9,12 @@ import { CoreModule } from '@/@core/core.module';
 
 import { GeolocationModule } from '@/geolocation/geolocation.module';
 
-import { HealthModule } from '@/health/health.module';
-
 import { GlobalExceptionFilter } from '@/shared/lib/exceptions/filters/global-exception-filter';
 import { HttpExceptionFilter } from '@/shared/lib/exceptions/filters/http-exception-filter';
 import { DatabaseModule } from '@/shared/modules/database/database.module';
 import { EnvModule } from '@/shared/modules/env/env.module';
 import { EnvService } from '@/shared/modules/env/env.service';
+import { HealthModule } from '@/shared/modules/health/health.module';
 import { SentryMonitorModule } from '@/shared/modules/monitor/sentry-monitor.module';
 import { SentryMonitorModuleOptions } from '@/shared/modules/monitor/sentry-monitor.types';
 
