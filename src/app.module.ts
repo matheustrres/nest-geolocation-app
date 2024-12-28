@@ -1,3 +1,4 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
@@ -38,6 +39,9 @@ import { SentryMonitorModuleOptions } from '@/shared/modules/monitor/sentry-moni
 				};
 			},
 			inject: [EnvService],
+		}),
+		CacheModule.register({
+			isGlobal: true,
 		}),
 		DatabaseModule,
 		HealthModule,
