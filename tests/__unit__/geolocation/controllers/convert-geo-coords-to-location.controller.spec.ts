@@ -39,4 +39,51 @@ describe(ConvertGeoCoordsToLocationController.name, () => {
 			lon: 73.9787414,
 		});
 	});
+
+	it('should return location for given coordinates', async () => {
+		jest.spyOn(sut, 'handle');
+		jest.spyOn(useCase, 'exec').mockResolvedValueOnce({
+			location: {
+				city: 'New York',
+				country: 'United States',
+				state: 'New York',
+				street: '5th Avenue',
+				countryCode: 'US',
+				lat: 40.7558017,
+				lon: 73.9787414,
+				municipality: 'New York',
+				name: '5th Avenue',
+				region: 'New York',
+				suburb: 'Manhattan',
+			},
+		});
+
+		const { body } = new ConvertGeoCoordsToLocationBodyDtoBuilder()
+			.setLat(40.7558017)
+			.setLon(73.9787414);
+
+		const { location } = await sut.handle(body);
+
+		expect(sut.handle).toHaveBeenCalledWith({
+			lat: 40.7558017,
+			lon: 73.9787414,
+		});
+		expect(useCase.exec).toHaveBeenCalledWith({
+			lat: 40.7558017,
+			lon: 73.9787414,
+		});
+		expect(location).toStrictEqual({
+			city: 'New York',
+			country: 'United States',
+			state: 'New York',
+			street: '5th Avenue',
+			countryCode: 'US',
+			lat: 40.7558017,
+			lon: 73.9787414,
+			municipality: 'New York',
+			name: '5th Avenue',
+			region: 'New York',
+			suburb: 'Manhattan',
+		});
+	});
 });
