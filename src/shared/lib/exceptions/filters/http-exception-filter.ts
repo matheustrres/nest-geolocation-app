@@ -4,6 +4,7 @@ import {
 	ExceptionFilter,
 	HttpException,
 	HttpStatus,
+	Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -12,6 +13,8 @@ import { RequestSessionStatus } from '@/shared/modules/monitor/sentry-monitor.ty
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
+	readonly #logger = new Logger(HttpExceptionFilter.name);
+
 	constructor(private readonly sentryMonitorService: SentryMonitorService) {}
 
 	catch(exception: HttpException, host: ArgumentsHost): Response {
@@ -38,6 +41,8 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
 				RequestSessionStatus.ERRORED,
 			);
 		}
+
+		this.#logger.error('An unhandled exception has been caught: ', exception);
 
 		return response.status(status).json(errorResponse);
 	}

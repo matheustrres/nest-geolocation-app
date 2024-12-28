@@ -4,6 +4,7 @@ import {
 	ExceptionFilter,
 	HttpException,
 	HttpStatus,
+	Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { isAxiosError } from '@nestjs/terminus/dist/utils';
@@ -13,6 +14,8 @@ import { RequestSessionStatus } from '@/shared/modules/monitor/sentry-monitor.ty
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter<unknown> {
+	readonly #logger = new Logger(GlobalExceptionFilter.name);
+
 	constructor(
 		private readonly sentryMonitorService: SentryMonitorService,
 		private readonly httpAdapterHost: HttpAdapterHost,
@@ -38,6 +41,7 @@ export class GlobalExceptionFilter implements ExceptionFilter<unknown> {
 			errorResponse.content = exception.message;
 		}
 
+		this.#logger.error('An unhandled exception has been caught: ', exception);
 		this.sentryMonitorService.captureException(
 			exception,
 			RequestSessionStatus.ERRORED,
