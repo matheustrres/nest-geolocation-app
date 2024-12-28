@@ -4,18 +4,18 @@ import {
 	GeocodingRequestStatus,
 	GeocodingService,
 } from '@/geolocation/services/geocoding.service';
-import { ConvertGeoCoordsToLocationUseCase } from '@/geolocation/use-cases/convert-geo-coords-to-location.use-case';
+import { ConvertGeoCoordinatesToLocationUseCase } from '@/geolocation/use-cases/convert-geo-coords-to-location.use-case';
 
-import { ConvertGeoCoordsToLocationUseCaseBuilder } from '#/data/builders/use-cases/convert-geo-coords-to-location.use-case';
+import { ConvertGeoCoordinatesToLocationUseCaseBuilder } from '#/data/builders/use-cases/convert-geo-coords-to-location.use-case';
 import { createGeocodingServiceMock } from '#/data/mocks/geocoding.service';
 
-describe(ConvertGeoCoordsToLocationUseCase.name, () => {
+describe(ConvertGeoCoordinatesToLocationUseCase.name, () => {
 	let geocodingService: GeocodingService;
-	let sut: ConvertGeoCoordsToLocationUseCase;
+	let sut: ConvertGeoCoordinatesToLocationUseCase;
 
 	beforeEach(() => {
 		geocodingService = createGeocodingServiceMock();
-		sut = new ConvertGeoCoordsToLocationUseCase(geocodingService);
+		sut = new ConvertGeoCoordinatesToLocationUseCase(geocodingService);
 	});
 
 	it('should be defined', () => {
@@ -31,7 +31,7 @@ describe(ConvertGeoCoordsToLocationUseCase.name, () => {
 				status: GeocodingRequestStatus.Error,
 			});
 
-		const { input } = new ConvertGeoCoordsToLocationUseCaseBuilder()
+		const { input } = new ConvertGeoCoordinatesToLocationUseCaseBuilder()
 			.setLat(-23.5505)
 			.setLon(-46.6333);
 
@@ -54,38 +54,24 @@ describe(ConvertGeoCoordsToLocationUseCase.name, () => {
 			.spyOn(geocodingService, 'convertGeoCoordinatesToAddress')
 			.mockResolvedValueOnce({
 				status: GeocodingRequestStatus.Success,
-				data: [
-					{
-						city: 'São Paulo',
-						country: 'Brasil',
-						state: 'São Paulo',
-						lat: -23.5506507,
-						lon: -46.6333824,
-						street: 'Avenida Paulista',
-					},
-					{
-						city: 'São Paulo',
-						country: 'Brasil',
-						state: 'São Paulo',
-						lat: -23.5506507,
-						lon: -46.6333824,
-						street: 'Avenida Paulista',
-					},
-					{
-						city: 'São Paulo',
-						country: 'Brasil',
-						state: 'São Paulo',
-						lat: -23.5506507,
-						lon: -46.6333824,
-						street: 'Avenida Paulista',
-					},
-				],
+				data: {
+					city: 'São Paulo',
+					country: 'Brasil',
+					state: 'São Paulo',
+					lat: -23.5506507,
+					lon: -46.6333824,
+					street: 'Avenida Paulista',
+					countryCode: 'BR',
+					municipality: 'São Paulo',
+					name: 'São Paulo, Avenida Paulista, Brasil',
+					region: 'São Paulo',
+					suburb: 'Bela Vista',
+				},
 			});
 
-		const { input } = new ConvertGeoCoordsToLocationUseCaseBuilder()
+		const { input } = new ConvertGeoCoordinatesToLocationUseCaseBuilder()
 			.setLat(-23.5505)
-			.setLon(-46.6333)
-			.setLimit(2);
+			.setLon(-46.6333);
 
 		const result = await sut.exec(input);
 
@@ -95,24 +81,18 @@ describe(ConvertGeoCoordsToLocationUseCase.name, () => {
 			lat: -23.5505,
 			lon: -46.6333,
 		});
-		expect(result.locations).toHaveLength(2);
-		expect(result.locations).toStrictEqual([
-			{
-				city: 'São Paulo',
-				country: 'Brasil',
-				state: 'São Paulo',
-				lat: -23.5506507,
-				lon: -46.6333824,
-				street: 'Avenida Paulista',
-			},
-			{
-				city: 'São Paulo',
-				country: 'Brasil',
-				state: 'São Paulo',
-				lat: -23.5506507,
-				lon: -46.6333824,
-				street: 'Avenida Paulista',
-			},
-		]);
+		expect(result.location).toStrictEqual({
+			city: 'São Paulo',
+			country: 'Brasil',
+			state: 'São Paulo',
+			lat: -23.5506507,
+			lon: -46.6333824,
+			street: 'Avenida Paulista',
+			countryCode: 'BR',
+			municipality: 'São Paulo',
+			name: 'São Paulo, Avenida Paulista, Brasil',
+			region: 'São Paulo',
+			suburb: 'Bela Vista',
+		});
 	});
 });

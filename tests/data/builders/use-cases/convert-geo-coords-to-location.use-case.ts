@@ -1,24 +1,22 @@
 import { fakerPT_BR } from '@faker-js/faker';
 
+import { ReverseGeocoding } from '@/geolocation/services/geocoding.service';
 import {
-	ConvertGeoCoordsToLocationUseCaseInput,
-	ConvertGeoCoordsToLocationUseCaseOutput,
+	ConvertGeoCoordinatesToLocationUseCaseInput,
+	ConvertGeoCoordinatesToLocationUseCaseOutput,
 } from '@/geolocation/use-cases/convert-geo-coords-to-location.use-case';
 
-export class ConvertGeoCoordsToLocationUseCaseBuilder {
-	#input: ConvertGeoCoordsToLocationUseCaseInput;
+export class ConvertGeoCoordinatesToLocationUseCaseBuilder {
+	#input: ConvertGeoCoordinatesToLocationUseCaseInput;
 
-	constructor(input?: Partial<ConvertGeoCoordsToLocationUseCaseInput>) {
+	constructor(input?: Partial<ConvertGeoCoordinatesToLocationUseCaseInput>) {
 		this.#input = {
 			lat: input?.lat || fakerPT_BR.location.latitude(),
 			lon: input?.lon || fakerPT_BR.location.longitude(),
-			itemsPerPage: input?.itemsPerPage,
-			limit: input?.limit,
-			skip: input?.skip,
 		};
 	}
 
-	get input(): ConvertGeoCoordsToLocationUseCaseInput {
+	get input(): ConvertGeoCoordinatesToLocationUseCaseInput {
 		return this.#input;
 	}
 
@@ -32,24 +30,9 @@ export class ConvertGeoCoordsToLocationUseCaseBuilder {
 		return this;
 	}
 
-	setItemsPerPage(itemsPerPage: number): this {
-		this.#input.itemsPerPage = itemsPerPage;
-		return this;
-	}
-
-	setLimit(limit: number): this {
-		this.#input.limit = limit;
-		return this;
-	}
-
-	setSkip(skip: number): this {
-		this.#input.skip = skip;
-		return this;
-	}
-
-	build(): ConvertGeoCoordsToLocationUseCaseOutput {
+	build(): ConvertGeoCoordinatesToLocationUseCaseOutput {
 		return {
-			locations: [],
+			location: {} as ReverseGeocoding,
 		};
 	}
 }

@@ -1,7 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { PaginatorService } from '@/@core/domain/services/paginator.service';
-import { WithPaginationOptions } from '@/@core/domain/types';
 import { UseCase } from '@/@core/domain/use-case';
 
 import {
@@ -11,19 +9,19 @@ import {
 	ReverseGeocoding,
 } from '@/geolocation/services/geocoding.service';
 
-export type ConvertGeoCoordsToLocationUseCaseInput =
-	WithPaginationOptions<ConvertGeoCoordsToLocationOptions>;
+export type ConvertGeoCoordinatesToLocationUseCaseInput =
+	ConvertGeoCoordsToLocationOptions;
 
-export type ConvertGeoCoordsToLocationUseCaseOutput = {
-	locations: ReverseGeocoding[];
+export type ConvertGeoCoordinatesToLocationUseCaseOutput = {
+	location: ReverseGeocoding;
 };
 
 @Injectable()
-export class ConvertGeoCoordsToLocationUseCase
+export class ConvertGeoCoordinatesToLocationUseCase
 	implements
 		UseCase<
-			ConvertGeoCoordsToLocationUseCaseInput,
-			ConvertGeoCoordsToLocationUseCaseOutput
+			ConvertGeoCoordinatesToLocationUseCaseInput,
+			ConvertGeoCoordinatesToLocationUseCaseOutput
 		>
 {
 	constructor(private readonly geocodingService: GeocodingService) {}
@@ -31,8 +29,7 @@ export class ConvertGeoCoordsToLocationUseCase
 	async exec({
 		lat,
 		lon,
-		...paginOptions
-	}: ConvertGeoCoordsToLocationUseCaseInput): Promise<ConvertGeoCoordsToLocationUseCaseOutput> {
+	}: ConvertGeoCoordinatesToLocationUseCaseInput): Promise<ConvertGeoCoordinatesToLocationUseCaseOutput> {
 		const result = await this.geocodingService.convertGeoCoordinatesToAddress({
 			lat,
 			lon,
@@ -44,15 +41,8 @@ export class ConvertGeoCoordsToLocationUseCase
 			);
 		}
 
-		const paginator = new PaginatorService({
-			items: [...result.data],
-			itemsPerPage: paginOptions.itemsPerPage,
-			skip: paginOptions.skip,
-			take: paginOptions.limit,
-		});
-
 		return {
-			locations: [...paginator.loadPages()].flat(),
+			location: result.data,
 		};
 	}
 }

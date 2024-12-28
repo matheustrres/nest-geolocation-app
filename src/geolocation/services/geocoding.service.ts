@@ -22,28 +22,33 @@ export type ForwardGeocoding = {
 };
 
 export type ReverseGeocoding = {
-	city: string;
-	country: string;
-	state: string;
-	street: string;
+	name: string;
 	lat: number;
 	lon: number;
+	country: string;
+	countryCode: string;
+	city: string;
+	state: string;
+	municipality: string;
+	street: string;
+	suburb: string;
+	region: string;
 };
 
-export type GeocodingResponse<T extends ForwardGeocoding | ReverseGeocoding> =
+export type GeocodingResponse<T> =
 	| {
 			status: GeocodingRequestStatus.Error;
 			data: string;
 	  }
 	| {
 			status: GeocodingRequestStatus.Success;
-			data: Iterable<T>;
+			data: T;
 	  };
 
 export abstract class GeocodingService {
 	abstract convertAddressToGeoCoordinates(
 		opts: ConvertLocationToGeoCoordinatesOptions,
-	): Promise<GeocodingResponse<ForwardGeocoding>>;
+	): Promise<GeocodingResponse<Iterable<ForwardGeocoding>>>;
 	abstract convertGeoCoordinatesToAddress(
 		opts: ConvertGeoCoordsToLocationOptions,
 	): Promise<GeocodingResponse<ReverseGeocoding>>;
