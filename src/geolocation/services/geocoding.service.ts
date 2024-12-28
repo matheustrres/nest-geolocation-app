@@ -44,7 +44,7 @@ export abstract class GeocodingService {
 	abstract convertAddressToGeoCoordinates(
 		opts: ConvertLocationToGeoCoordinatesOptions,
 	): Promise<GeocodingResponse<ForwardGeocoding>>;
-	abstract convertGeoCoordinatesToLocation(
+	abstract convertGeoCoordinatesToAddress(
 		opts: ConvertGeoCoordsToLocationOptions,
 	): Promise<GeocodingResponse<ReverseGeocoding>>;
 }

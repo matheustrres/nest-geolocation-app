@@ -33,7 +33,7 @@ export class ConvertGeoCoordsToLocationUseCase
 		lon,
 		...paginOptions
 	}: ConvertGeoCoordsToLocationUseCaseInput): Promise<ConvertGeoCoordsToLocationUseCaseOutput> {
-		const result = await this.geocodingService.convertGeoCoordinatesToLocation({
+		const result = await this.geocodingService.convertGeoCoordinatesToAddress({
 			lat,
 			lon,
 		});
