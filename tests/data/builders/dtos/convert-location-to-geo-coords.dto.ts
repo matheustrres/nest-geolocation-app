@@ -1,6 +1,9 @@
 import { fakerPT_BR } from '@faker-js/faker';
 
-import { ConvertLocationToGeoCoordinatesBodyDto } from '@/geolocation/controllers/dtos/convert-location-to-geo-coords.dto';
+import {
+	ConvertLocationToGeoCoordinatesBodyDto,
+	ConvertLocationToGeoCoordinatesQueryDto,
+} from '@/geolocation/controllers/dtos/convert-location-to-geo-coords.dto';
 
 export class ConvertLocationToGeoCoordinatesBodyDtoBuilder {
 	#body: ConvertLocationToGeoCoordinatesBodyDto;
@@ -40,5 +43,40 @@ export class ConvertLocationToGeoCoordinatesBodyDtoBuilder {
 
 	build(): ConvertLocationToGeoCoordinatesBodyDto {
 		return this.#body;
+	}
+}
+
+export class ConvertLocationToGeoCoordinatesQueryDtoBuilder {
+	#query: ConvertLocationToGeoCoordinatesQueryDto;
+
+	constructor(query?: Partial<ConvertLocationToGeoCoordinatesQueryDto>) {
+		this.#query = {
+			itemsPerPage: query?.itemsPerPage,
+			limit: query?.limit,
+			skip: query?.skip,
+		};
+	}
+
+	get query(): ConvertLocationToGeoCoordinatesQueryDto {
+		return this.#query;
+	}
+
+	setItemsPerPage(itemsPerPage: number): this {
+		this.#query.itemsPerPage = itemsPerPage;
+		return this;
+	}
+
+	setLimit(limit: number): this {
+		this.#query.limit = limit;
+		return this;
+	}
+
+	setSkip(skip: number): this {
+		this.#query.skip = skip;
+		return this;
+	}
+
+	build(): ConvertLocationToGeoCoordinatesQueryDto {
+		return this.#query;
 	}
 }
