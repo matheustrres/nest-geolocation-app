@@ -5,6 +5,11 @@ export type ConvertLocationToGeoCoordinatesOptions = {
 	street: string;
 };
 
+export type ConvertGeoCoordsToLocationOptions = {
+	lat: number;
+	lon: number;
+};
+
 export enum GeocodingRequestStatus {
 	Error = 'error',
 	Success = 'success',
@@ -16,18 +21,18 @@ export type ForwardGeocoding = {
 	lon: number;
 };
 
-export type LocationToGeoCoordinatesConversionResponse =
+export type GeocodingResponse<T extends ForwardGeocoding> =
 	| {
 			status: GeocodingRequestStatus.Error;
 			data: string;
 	  }
 	| {
 			status: GeocodingRequestStatus.Success;
-			data: Iterable<ForwardGeocoding>;
+			data: Iterable<T>;
 	  };
 
 export abstract class GeocodingService {
 	abstract convertAddressToGeoCoordinates(
 		opts: ConvertLocationToGeoCoordinatesOptions,
-	): Promise<LocationToGeoCoordinatesConversionResponse>;
+	): Promise<GeocodingResponse<ForwardGeocoding>>;
 }

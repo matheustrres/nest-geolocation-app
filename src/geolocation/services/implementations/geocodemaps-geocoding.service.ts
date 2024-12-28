@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { catchError, firstValueFrom, map, of } from 'rxjs';
 
 import {
-	LocationToGeoCoordinatesConversionResponse,
+	GeocodingResponse,
 	ConvertLocationToGeoCoordinatesOptions,
 	GeocodingService,
 	GeocodingRequestStatus,
@@ -30,7 +30,7 @@ export class GeocodeMapsGeocodingService implements GeocodingService {
 
 	async convertAddressToGeoCoordinates(
 		opts: ConvertLocationToGeoCoordinatesOptions,
-	): Promise<LocationToGeoCoordinatesConversionResponse> {
+	): Promise<GeocodingResponse<ForwardGeocoding>> {
 		const source = this.httpService.get<GeocodeMapsForwardGeocodingResponse[]>(
 			this.#buildForwardGeocodingUrl(opts).toString(),
 		);
@@ -65,7 +65,7 @@ export class GeocodeMapsGeocodingService implements GeocodingService {
 		return url;
 	}
 
-	#replyWithError(message: string): LocationToGeoCoordinatesConversionResponse {
+	#replyWithError(message: string): GeocodingResponse<ForwardGeocoding> {
 		return {
 			status: GeocodingRequestStatus.Error,
 			data: message,
@@ -74,7 +74,7 @@ export class GeocodeMapsGeocodingService implements GeocodingService {
 
 	#replyWithSuccess(
 		data: GeocodeMapsForwardGeocodingResponse[],
-	): LocationToGeoCoordinatesConversionResponse {
+	): GeocodingResponse<ForwardGeocoding> {
 		return {
 			status: GeocodingRequestStatus.Success,
 			data: this.#normalizeForwardedGeocodingCoordinates(data),
