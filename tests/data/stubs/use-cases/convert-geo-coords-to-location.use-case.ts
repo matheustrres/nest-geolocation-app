@@ -7,13 +7,14 @@ import {
 } from '@/geolocation/use-cases/convert-geo-coords-to-location.use-case';
 
 import { ConvertGeoCoordinatesToLocationUseCaseBuilder } from '#/data/builders/use-cases/convert-geo-coords-to-location.use-case';
+import { createCachingServiceMock } from '#/data/mocks/caching.service';
 import { createGeocodingServiceMock } from '#/data/mocks/geocoding.service';
 
 export class ConvertGeoCoordsToLocationUseCaseStub extends ConvertGeoCoordinatesToLocationUseCase {
 	#isLocationInvalid = false;
 
 	constructor() {
-		super(createGeocodingServiceMock());
+		super(createCachingServiceMock(), createGeocodingServiceMock());
 	}
 
 	async exec({
