@@ -22,7 +22,7 @@
 		"test:watch": "npm run test -- --watch",
 		"test:cov": "npm run test -- --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"pretest:e2e": "npm docker:up database --force-recreate",
+		"pretest:e2e": "npm run docker:up database --force-recreate",
 		"test:e2e": "npm run test -- --config ./jest.e2e-config.ts",
 		"posttest:e2e": "npm run docker:stop database",
 		"prepare": "husky install"
